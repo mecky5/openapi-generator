@@ -60,3 +60,14 @@ export type {{enumName}} = typeof {{enumName}}[keyof typeof {{enumName}}];
 {{/isEnum}}
 {{/vars}}
 {{/hasEnums}}
+
+/**
+* validation model
+*/
+export const {{classname}}ValidationModel = {
+    {{#vars}}
+    {{baseName}}: { {{#dataType}}type: "{{dataType}}", {{/dataType}}{{#required}}required: true, {{/required}}{{#maxLength}}maxLength: {{maxLength}}, {{/maxLength}}{{#minLength}}minLength: {{minLength}}, {{/minLength}}{{#pattern}}pattern: {{pattern}}, {{/pattern}}},
+    {{/vars}}
+} as const;
+
+export type {{classname}}ValidationModel = typeof {{classname}}ValidationModel[keyof typeof {{classname}}ValidationModel];

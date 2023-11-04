@@ -1215,4 +1215,8 @@ public class CodegenProperty implements Cloneable, IJsonSchemaValidationProperti
                 ref, uniqueItemsBoolean, schemaIsFromAdditionalProperties, isBooleanSchemaTrue, isBooleanSchemaFalse,
                 format, dependentRequired, contains);
     }
+
+    public boolean isSet() {
+        return (baseType != null && "Set".equals(baseType));
+    }
 }

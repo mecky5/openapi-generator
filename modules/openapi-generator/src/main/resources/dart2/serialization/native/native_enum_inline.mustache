@@ -4,12 +4,30 @@ class {{{enumName}}} {
   const {{{enumName}}}._(this.value);
 
   /// The underlying value of this enum member.
+  {{^isContainer}}
+  /// Variante 1
   final {{{dataType}}} value;
+  {{/isContainer}}
+  {{#isContainer}}
+    {{#mostInnerItems}}
+  /// Variante 2
+  final {{{dataType}}} value;
+    {{/mostInnerItems}}
+  {{/isContainer}}
 
   @override
   String toString() => {{#isString}}value{{/isString}}{{^isString}}value.toString(){{/isString}};
 
+  {{^isContainer}}
+  /// Variante 1
   {{{dataType}}} toJson() => value;
+  {{/isContainer}}
+  {{#isContainer}}
+    {{#mostInnerItems}}
+  /// Variante 2
+  {{{dataType}}} toJson() => value;
+    {{/mostInnerItems}}
+  {{/isContainer}}
 
   {{#allowableValues}}
     {{#enumVars}}
@@ -49,7 +67,16 @@ class {{{enumName}}}TypeTransformer {
 
   const {{{enumName}}}TypeTransformer._();
 
+  {{^isContainer}}
+  /// Variante 1
   {{{dataType}}} encode({{{enumName}}} data) => data.value;
+  {{/isContainer}}
+  {{#isContainer}}
+    {{#mostInnerItems}}
+  /// Variante 2
+  {{{dataType}}} encode({{{enumName}}} data) => data.value;
+    {{/mostInnerItems}}
+  {{/isContainer}}
 
   /// Decodes a [dynamic value][data] to a {{{enumName}}}.
   ///

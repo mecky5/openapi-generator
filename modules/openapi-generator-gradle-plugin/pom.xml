@@ -6,7 +6,7 @@
         <!-- RELEASE_VERSION -->
         <version>6.2.1</version>
         <!-- /RELEASE_VERSION -->
-        <relativePath>../..</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
