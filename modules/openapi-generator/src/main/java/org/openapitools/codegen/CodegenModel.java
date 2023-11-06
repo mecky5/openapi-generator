@@ -76,6 +76,7 @@ public class CodegenModel implements IJsonSchemaValidationProperties {
     public List<CodegenProperty> readWriteVars = new ArrayList<>(); // a list of properties for read, write
     public List<CodegenProperty> parentVars = new ArrayList<>();
     public List<CodegenProperty> parentRequiredVars = new ArrayList<>();
+    public List<CodegenProperty> allParentVars = new ArrayList<>();
     public List<CodegenProperty> nonNullableVars = new ArrayList<>(); // a list of non-nullable properties
     public Map<String, Object> allowableValues;
 

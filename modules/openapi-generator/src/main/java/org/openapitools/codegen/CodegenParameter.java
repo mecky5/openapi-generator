@@ -35,7 +35,7 @@ public class CodegenParameter implements IJsonSchemaValidationProperties {
     public String example; // example value (x-example)
     public String jsonSchema;
     public boolean isString, isNumeric, isInteger, isLong, isNumber, isFloat, isDouble, isDecimal, isByteArray, isBinary,
-            isBoolean, isDate, isDateTime, isUuid, isUri, isEmail, isPassword, isFreeFormObject, isAnyType, isShort, isUnboundedInteger;
+            isBoolean, isDate, isDateTime, isUuid, isUri, isEmail, isPassword, isFreeFormObject, isAnyType, isShort, isUnboundedInteger, isMonth;
     public boolean isArray, isMap;
     public boolean isFile;
     public boolean isEnum;

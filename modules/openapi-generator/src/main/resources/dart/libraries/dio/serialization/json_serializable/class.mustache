@@ -23,7 +23,7 @@ part '{{classFilename}}.g.dart';
 class {{{classname}}} {
 {{>serialization/json_serializable/dart_constructor}}
 
-{{#vars}}
+{{#allVars}}
   {{#description}}
       /// {{{description}}}
   {{/description}}
@@ -60,18 +60,18 @@ class {{{classname}}} {
 
 
 
-{{/vars}}
+{{/allVars}}
   @override
   bool operator ==(Object other) => identical(this, other) || other is {{{classname}}} &&
-  {{#vars}}
+  {{#allVars}}
      other.{{{name}}} == {{{name}}}{{^-last}} &&{{/-last}}{{#-last}};{{/-last}}
-  {{/vars}}
+  {{/allVars}}
 
   @override
   int get hashCode =>
-  {{#vars}}
+  {{#allVars}}
     {{#isNullable}}({{{name}}} == null ? 0 : {{{name}}}.hashCode){{/isNullable}}{{^isNullable}}{{{name}}}.hashCode{{/isNullable}}{{^-last}} +{{/-last}}{{#-last}};{{/-last}}
-  {{/vars}}
+  {{/allVars}}
 
   factory {{{classname}}}.fromJson(Map<String, dynamic> json) => _${{{classname}}}FromJson(json);
 
@@ -83,7 +83,7 @@ class {{{classname}}} {
   }
 
 }
-{{#vars}}
+{{#allVars}}
     {{#isEnum}}
         {{^isContainer}}
 
@@ -96,4 +96,4 @@ class {{{classname}}} {
             {{/mostInnerItems}}
         {{/isContainer}}
     {{/isEnum}}
-{{/vars}}
+{{/allVars}}

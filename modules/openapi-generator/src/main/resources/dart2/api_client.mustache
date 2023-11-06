@@ -160,6 +160,8 @@ class ApiClient {
   static dynamic _deserialize(dynamic value, String targetType, {bool growable = false}) {
     try {
       switch (targetType) {
+        case 'num':
+          return value is num ? value : num.parse('$value');
         case 'String':
           return value is String ? value : value.toString();
         case 'int':

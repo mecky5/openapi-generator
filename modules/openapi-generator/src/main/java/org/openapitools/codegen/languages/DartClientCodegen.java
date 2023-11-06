@@ -25,6 +25,15 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import io.swagger.v3.oas.models.media.Schema;
+import org.openapitools.codegen.*;
+import org.openapitools.codegen.model.ModelMap;
+import org.openapitools.codegen.model.ModelsMap;
+import org.openapitools.codegen.utils.ModelUtils;
 
 public class DartClientCodegen extends AbstractDartCodegen {
 
@@ -92,4 +101,94 @@ public class DartClientCodegen extends AbstractDartCodegen {
 
         }
     }
+
+    @Override
+    public CodegenModel fromModel(String name, Schema schema) {
+        CodegenModel codegenModel = super.fromModel(name, schema);
+//        List<Schema> allOf = schema.getAllOf();
+//        if(allOf != null && !allOf.isEmpty()) {
+//            String $ref = allOf.get(0).get$ref();
+//            if($ref != null) {
+//                String parentName = $ref.replace("#/components/schemas/", "");
+//                Map<String, Schema> allDefinitions = ModelUtils.getSchemas(this.openAPI);
+//                Schema parentSchema = allDefinitions.get(parentName);
+//                CodegenModel parentCodegenModel = fromModel(parentName, parentSchema);
+//
+//                List<CodegenProperty> propList = codegenModel.getVars().stream().filter(p -> parentCodegenModel.getAllVars().stream().noneMatch(pp -> p.name == pp.name)).collect(Collectors.toList());
+//                codegenModel.setVars(propList);
+//
+//
+//
+//                codegenModel.setParentVars(parentCodegenModel.getVars().stream().filter(p -> !"xClass".equals(p.name)).collect(Collectors.toList()));
+////                codegenModel.setClassname(codegenModel.getClassname()+" extends "+parentName);
+//                List<CodegenProperty> allProps = codegenModel.getAllVars();
+//                allProps.clear();
+//                allProps.addAll(codegenModel.getParentVars());
+//                allProps.addAll(codegenModel.getVars());
+//            }
+//        }
+        return codegenModel;
+    }
+
+    @Override
+    public Map<String, ModelsMap> postProcessAllModels(Map<String, ModelsMap> objs) {
+        Map<String, ModelsMap> modelsMap = super.postProcessAllModels(objs);
+
+        modelsMap.values().stream().forEach(values -> {
+            for (ModelMap modelMap: values.getModels()) {
+                CodegenModel model = modelMap.getModel();
+                LOGGER.info("Current model name: {}", model.name);
+                Map<String, CodegenProperty> parentVarNames = new HashMap<>();
+                collectParentVarNames(model, parentVarNames, objs);
+                String parentName = model.getParent();
+                LOGGER.info("Current models parent name: {}", parentName);
+                if(parentName != null) {
+                    ModelsMap parentModelsMap = objs.get(parentName);
+                    Optional<ModelMap> $model = parentModelsMap.getModels().stream().filter(m -> m.containsKey("model")).findFirst();
+                    $model.ifPresent(k -> {
+                        List<CodegenProperty> propList = model.getVars().stream().filter(p -> !parentVarNames.keySet().contains(p.name)).collect(Collectors.toList());
+                        model.setVars(propList);
+                        model.setParentVars(k.getModel().getVars().stream().filter(p -> !"xClass".equals(p.name)).collect(Collectors.toList()));
+                        List<CodegenProperty> allProps = model.getAllVars();
+                        allProps.clear();
+                        parentVarNames.remove("xClass");
+                        allProps.addAll(parentVarNames.values());
+                        allProps.addAll(model.getVars());
+                        model.allParentVars.addAll(parentVarNames.values());
+                    });
+                }
+//                List<CodegenProperty> remove = new ArrayList<>();
+//                List<CodegenProperty> add = new ArrayList<>();
+//                model.getAllVars().stream().forEach(p -> {
+//                    if(p.isInnerEnum) {
+//                        CodegenProperty prop = parentVarNames.get(p.name);
+//                        if(prop != null) {
+//                            remove.add(p);
+//                            add.add(prop);
+//                        };
+//                    }
+//                });
+//                model.getAllVars().removeAll(remove);
+//                model.getAllVars().addAll(add);
+            }
+        });
+
+
+
+        return modelsMap;
+    }
+
+    private void collectParentVarNames(CodegenModel model, Map<String, CodegenProperty> varNames, Map<String, ModelsMap> objs) {
+        String parentName = model.getParent();
+        if(parentName != null) {
+            ModelsMap parentModelsMap = objs.get(parentName);
+            Optional<ModelMap> $model = parentModelsMap.getModels().stream().filter(m -> m.containsKey("model")).findFirst();
+            $model.ifPresent(k -> {
+                CodegenModel parentModel = k.getModel();
+                parentModel.getAllVars().stream().forEach(p -> varNames.put(p.getName(), p));
+                collectParentVarNames(parentModel, varNames, objs);
+            });
+        }
+    }
+
 }

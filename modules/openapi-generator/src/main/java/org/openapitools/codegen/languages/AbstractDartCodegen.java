@@ -1,6 +1,7 @@
 package org.openapitools.codegen.languages;
 
 import com.google.common.collect.Sets;
+import com.google.common.io.CharStreams;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.ComposedSchema;
@@ -15,6 +16,7 @@ import org.openapitools.codegen.model.ModelMap;
 import org.openapitools.codegen.model.ModelsMap;
 import org.openapitools.codegen.model.OperationMap;
 import org.openapitools.codegen.model.OperationsMap;
+import org.openapitools.codegen.utils.CamelizeOption;
 import org.openapitools.codegen.utils.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static org.openapitools.codegen.utils.CamelizeOption.LOWERCASE_FIRST_LETTER;
 import static org.openapitools.codegen.utils.StringUtils.*;
@@ -393,7 +396,7 @@ public abstract class AbstractDartCodegen extends DefaultCodegen {
 
         // camelize (lower first character) the variable name
         // pet_id => petId
-        name = camelize(name, LOWERCASE_FIRST_LETTER);
+        name = camelize(name, CamelizeOption.LOWERCASE_FIRST_CHAR);
 
         if (name.matches("^\\d.*")) {
             name = "n" + name;
@@ -617,6 +620,9 @@ public abstract class AbstractDartCodegen extends DefaultCodegen {
             }
         }
         for (CodegenParameter p : op.allParams) {
+            if("Month".equals(p.dataType)) {
+                p.isMonth = true;
+            }
             if (p.isContainer) {
                 final String type = p.isArray ? "array" : "map";
                 if (typeMapping().containsKey(type)) {
@@ -626,6 +632,12 @@ public abstract class AbstractDartCodegen extends DefaultCodegen {
                         op.imports.add(value);
                     }
                 }
+            }
+        }
+
+        for (CodegenParameter p : op.pathParams) {
+            if ("Month".equals(p.dataType)) {
+                p.isMonth = true;
             }
         }
         return op;
